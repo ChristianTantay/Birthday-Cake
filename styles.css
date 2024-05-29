@@ -1,0 +1,272 @@
+body {
+  background-color: #000000;
+}
+
+.cake {
+  position: absolute;
+  width: 250px;
+  height: 200px;
+  top: 50%;
+  left: 50%;
+  margin-top: -70px;
+  margin-left: -125px;
+}
+
+.plate {
+  width: 270px;
+  height: 110px;
+  position: absolute;
+  bottom: -10px;
+  left: -10px;
+  background-color: #d69e79;
+  border-radius: 50%;
+  box-shadow:
+      0 2px 0 darken(#ccc, 10%),
+      0 4px 0 darken(#ccc, 10%),
+      0 5px 40px rgba(0, 0, 0, 0.5);
+}
+
+.cake > * {
+  position: absolute;
+}
+
+.layer {
+  position: absolute;
+  display: block;
+  width: 250px;
+  height: 100px;
+  border-radius: 50%;
+  background-color: #ca80b4;
+  box-shadow:
+      0 2px 0px lighten(#553c13, 5%),
+      0 4px 0px darken(#553c13, 8.2%),
+      0 6px 0px darken(#553c13, 8.4%),
+      0 8px 0px darken(#553c13, 8.6%),
+      0 10px 0px darken(#553c13, 8.8%),
+      0 12px 0px darken(#553c13, 9%),
+      0 14px 0px darken(#553c13, 9.2%),
+      0 16px 0px darken(#553c13, 9.4%),
+      0 18px 0px darken(#553c13, 9.6%),
+      0 20px 0px darken(#553c13, 9.8%),
+      0 22px 0px darken(#553c13, 10%),
+      0 24px 0px darken(#553c13, 10.2%),
+      0 26px 0px darken(#553c13, 10.4%),
+      0 28px 0px darken(#553c13, 10.6%),
+      0 30px 0px darken(#553c13, 10.8%);
+}
+
+.layer-top { top: 0px; }
+.layer-middle { top: 33px; }
+.layer-bottom { top: 66px; }
+
+.icing {
+  top: 2px;
+  left: 5px;
+  background-color: #e0d2d7;
+  width: 240px;
+  height: 90px;
+  border-radius: 50%;
+  position: relative;
+  z-index: 1;
+}
+
+.icing:before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  right: 5px;
+  bottom: 6px;
+  left: 5px;
+  background-color: lighten(#f0e4d0, 3%);
+  box-shadow:
+      0 0 4px lighten(#f0e4d0, 5%),
+      0 0 4px lighten(#f0e4d0, 5%),
+      0 0 4px lighten(#f0e4d0, 5%);
+  border-radius: 50%;
+  z-index: -1;
+}
+
+.drip {
+  display: block;
+  width: 50px;
+  height: 60px;
+  border-bottom-left-radius: 25px;
+  border-bottom-right-radius: 25px;
+  background-color: #e0d2d7;
+}
+
+.drip1 {
+  top: 53px;
+  left: 5px;
+  transform: skewY(15deg);
+  height: 48px;
+  width: 40px;
+}
+
+.drip2 {
+  top: 69px;
+  left: 181px;
+  transform: skewY(-15deg);
+}
+
+.drip3 {
+  top: 54px;
+  left: 90px;
+  width: 80px;
+  border-bottom-left-radius: 40px;
+  border-bottom-right-radius: 40px;
+}
+
+.candle {
+  background-color: #7B020B;
+  width: 16px;
+  height: 50px;
+  border-radius: 8px / 4px;
+  top: -90px;
+  left: 50%;
+  margin-left: -8px;
+  z-index: 10;
+  position: relative;
+}
+
+
+
+.flame {
+  position: absolute;
+  background-color: orange;
+  width: 15px;
+  height: 35px;
+  border-radius: 10px 10px 10px 10px / 25px 25px 10px 10px;
+  top: -34px;
+  left: 50%;
+  margin-left: -7.5px;
+  z-index: 10;
+  box-shadow:
+      0 0 10px rgba(orange, 0.5),
+      0 0 20px rgba(orange, 0.5),
+      0 0 60px rgba(orange, 0.5),
+      0 0 80px rgba(orange, 0.5);
+  transform-origin: 50% 90%;
+  animation: flicker 1s ease-in-out alternate infinite;
+}
+
+@keyframes flicker {
+  0% {
+      transform: skewX(5deg);
+      box-shadow: 
+          0 0 10px rgba(orange, 0.2),
+          0 0 20px rgba(orange, 0.2),
+          0 0 60px rgba(orange, 0.2),
+          0 0 80px rgba(orange, 0.2);
+  }
+  25% {
+      transform: skewX(-5deg);
+      box-shadow:
+          0 0 10px rgba(orange, 0.5),
+          0 0 20px rgba(orange, 0.5),
+          0 0 60px rgba(orange, 0.5),
+          0 0 80px rgba(orange, 0.5);
+  }
+  50% {
+      transform: skewX(10deg);
+      box-shadow:
+          0 0 10px rgba(orange, 0.3),
+          0 0 20px rgba(orange, 0.3),
+          0 0 60px rgba(orange, 0.3),
+          0 0 80px rgba(orange, 0.3);
+  }
+  75% {
+      transform: skewX(-10deg);
+      box-shadow:
+          0 0 10px rgba(orange, 0.4),
+          0 0 20px rgba(orange, 0.4),
+          0 0 60px rgba(orange, 0.4),
+          0 0 80px rgba(orange, 0.4);
+  }
+  100% {
+      transform: skewX(5deg);
+      box-shadow:
+          0 0 10px rgba(orange, 0.5),
+          0 0 20px rgba(orange, 0.5),
+          0 0 60px rgba(orange, 0.5),
+          0 0 80px rgba(orange, 0.5);
+  }
+}
+
+/* Fireworks CSS */
+.pyro {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  top: 50%;
+  left: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+
+.pyro > div {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 10px #fff;
+  animation: pyro 5s linear infinite;
+}
+
+.pyro > .after {
+  animation-delay: 2.5s;
+}
+
+@keyframes pyro {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 1;
+  }
+  25% {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  75% {
+    transform: translate(-50%, -50%) scale(1.5);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2);
+    opacity: 0;
+  }
+}
+
+.popup {
+  position: fixed;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white; /* Kulay ng text */
+  font-size: 100px;
+  z-index: 9999; /* Para nasa harap ng ibang elemento */
+  background: none; /* Walang background */
+}
+
+#openPopup {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 50px;
+  padding: 15px 30px;
+  background-color: #af8eb3; /* Green background */
+  color: white; /* White text */
+  border: none; /* No borders */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor */
+  font-size: 16px;
+}
+
+#openPopup:hover {
+  background-color: #9845a0; /* Darker green background on hover */
+}

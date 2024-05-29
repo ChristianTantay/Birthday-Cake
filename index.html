@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Love!</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+<div class="cake">
+    <div class="plate"></div>
+    <div class="layer layer-bottom"></div>
+    <div class="layer layer-middle"></div>
+    <div class="layer layer-top"></div>
+    <div class="icing"></div>
+    <div class="drip drip1"></div>
+    <div class="drip drip2"></div>
+    <div class="drip drip3"></div>
+    <div class="candle">
+        <div class="flame"></div>
+    </div>
+</div>
+
+<canvas id="birthday"></canvas>
+<audio id="backgroundMusic" src="background_music.mp3" loop></audio>
+
+<button id="openPopup" style="position: absolute; left: 50%; transform: translateX(-50%); bottom: 250px;">View Our Memories</button>
+
+<script>
+    const flame = document.querySelector('.flame');
+    let isCandleLit = true;
+    let isBlowing = false;
+    let isBackgroundMusicPlaying = false;
+    
+    const threshold = 50; // Set a lower threshold for a more sensitive blow detection
+
+    function extinguishFlame() {
+        flame.style.opacity = '0';
+        isCandleLit = false;
+
+        // Add pop-up text
+        const popup = document.createElement('div');
+        popup.textContent = 'Happy Birthday Love!';
+        popup.classList.add('popup');
+        document.body.appendChild(popup);
+
+        // Do not restore flame opacity here
+        displayFireworks(); // Display fireworks after blowing out the candle
+
+        // Play background music
+        if (!isBackgroundMusicPlaying) {
+            document.getElementById('backgroundMusic').play();
+            isBackgroundMusicPlaying = true;
+        }
+    }
+
+function displayFireworks() {
+    let center = canvas.width / 2 | 0;
+    let y = canvas.height / 2 | 0;
+
+    let count = random(30, 50);
+    for(let i = 0; i < count; i++) {
+        birthday.fireworks.push(new Firework(
+            random(center - center / 4, center + center / 4),
+            canvas.height,
+            random(0, canvas.width),
+            random(0, y),
+            random(0, 360),
+            random(30, 110)));
+    }
+}
+
+    function lightFlame() {
+        flame.style.opacity = '1';
+        isCandleLit = true;
+    }
+
+    function checkBlow(audioData) {
+        // Compute average volume
+        let sum = audioData.reduce((a, b) => a + b, 0);
+        let average = sum / audioData.length;
+
+        // Check if blow is detected
+        if (average > threshold && isCandleLit && !isBlowing) {
+            extinguishFlame();
+            isBlowing = true;
+            setTimeout(() => {
+                isBlowing = false;
+                displayFireworks(); // Display fireworks after blowing out the candle
+            }, 1000); // Allow another blow after 1 second
+        }
+    }
+
+    navigator.mediaDevices.getUserMedia({audio: true})
+        .then(stream => {
+            const audioContext = new AudioContext();
+            const analyser = audioContext.createAnalyser();
+            const microphone = audioContext.createMediaStreamSource(stream);
+            const scriptProcessor = audioContext.createScriptProcessor(2048, 1, 1);
+
+            analyser.smoothingTimeConstant = 0.8;
+            analyser.fftSize = 1024;
+
+            microphone.connect(analyser);
+            analyser.connect(scriptProcessor);
+            scriptProcessor.connect(audioContext.destination);
+
+            scriptProcessor.onaudioprocess = () => {
+                const array = new Uint8Array(analyser.frequencyBinCount);
+                analyser.getByteFrequencyData(array);
+                checkBlow(array);
+            };
+        })
+        .catch(err => {
+            console.error('Error:', err);
+        // Disable the button if microphone permission is denied
+        document.getElementById('openPopup').disabled = true;
+    });
+
+    // Fireworks code
+    const PI2 = Math.PI * 2;
+    const random = (min, max) => Math.random() * (max - min + 1) + min | 0;
+    const timestamp = _ => new Date().getTime();
+
+    class Birthday {
+        constructor() {
+            this.resize();
+
+            this.fireworks = [];
+            this.counter = 0;
+
+        }
+
+        resize() {
+            this.width = canvas.width = window.innerWidth;
+            let center = this.width / 2 | 0;
+            this.spawnA = center - center / 4 | 0;
+            this.spawnB = center + center / 4 | 0;
+
+            this.height = canvas.height = window.innerHeight;
+            this.spawnC = this.height * .1;
+            this.spawnD = this.height * .5;
+
+        }
+
+        onClick(evt) {
+            let x = evt.clientX || evt.touches && evt.touches[0].pageX;
+            let y = evt.clientY || evt.touches && evt.touches[0].pageY;
+
+            let count = random(3,5);
+            for(let i = 0; i < count; i++) this.fireworks.push(new Firework(
+                random(this.spawnA, this.spawnB),
+                this.height,
+                x,
+                y,
+                random(0, 260),
+                random(30, 110)));
+
+            this.counter = -1;
+
+        }
+
+        update(delta) {
+            ctx.globalCompositeOperation = 'hard-light';
+            ctx.fillStyle = `rgba(20,20,20,${ 7 * delta })`;
+            ctx.fillRect(0, 0, this.width, this.height);
+
+            ctx.globalCompositeOperation = 'lighter';
+            for (let firework of this.fireworks) firework.update(delta);
+
+            this.counter += delta * 3;
+            if (this.counter >= 1) {
+                this.fireworks.push(new Firework(
+                    random(this.spawnA, this.spawnB),
+                    this.height,
+                    random(0, this.width),
+                    random(this.spawnC, this.spawnD),
+                    random(0, 360),
+                    random(30, 110)));
+                this.counter = 0;
+            }
+
+            if (this.fireworks.length > 1000) this.fireworks = this.fireworks.filter(firework => !firework.dead);
+
+        }
+    }
+
+    class Firework {
+        constructor(x, y, targetX, targetY, shade, offsprings) {
+            this.dead = false;
+            this.offsprings = offsprings;
+
+            this.x = x;
+            this.y = y;
+            this.targetX = targetX;
+            this.targetY = targetY;
+
+            this.shade = shade;
+            this.history = [];
+        }
+        update(delta) {
+            if (this.dead) return;
+
+            let xDiff = this.targetX - this.x;
+            let yDiff = this.targetY - this.y;
+            if (Math.abs(xDiff) > 3 || Math.abs(yDiff) > 3) {
+                this.x += xDiff * 2 * delta;
+                this.y += yDiff * 2 * delta;
+
+                this.history.push({
+                    x: this.x,
+                    y: this.y
+                });
+
+                if (this.history.length > 20) this.history.shift();
+
+            } else {
+                if (this.offsprings && !this.madeChilds) {
+
+                    let babies = this.offsprings / 2;
+                    for (let i = 0; i < babies; i++) {
+                        let targetX = this.x + this.offsprings * Math.cos(PI2 * i / babies) | 0;
+                        let targetY = this.y + this.offsprings * Math.sin(PI2 * i / babies) | 0;
+
+                        birthday.fireworks.push(new Firework(this.x, this.y, targetX, targetY, this.shade, 0));
+
+                    }
+
+                }
+                this.madeChilds = true;
+                this.history.shift();
+            }
+
+            if (this.history.length === 0) this.dead = true;
+            else if (this.offsprings) {
+                for (let i = 0; this.history.length > i; i++) {
+                    let point = this.history[i];
+                    ctx.beginPath();
+                    ctx.fillStyle = 'hsl(' + this.shade + ',100%,' + i + '%)';
+                    ctx.arc(point.x, point.y, 1, 0, PI2);
+                    ctx.fill();
+                }
+            } else {
+                ctx.beginPath();
+                ctx.fillStyle = 'hsl(' + this.shade + ',100%,50%)';
+                ctx.arc(this.x, this.y, 1, 0, PI2);
+                ctx.fill();
+            }
+
+        }
+    }
+
+    let canvas = document.getElementById('birthday');
+    let ctx = canvas.getContext('2d');
+
+    let then = timestamp();
+
+    let birthday = new Birthday;
+    window.onresize = () => birthday.resize();
+    window.onclick = evt => birthday.onClick(evt);
+    (function loop(){
+        requestAnimationFrame(loop);
+        let now = timestamp();
+        let delta = now - then;
+
+        then = now;
+        birthday.update(delta / 1000);
+        document.getElementById('openPopup').addEventListener('click', function() {
+    var width = 800;
+    var height = 600;
+    var left = (window.innerWidth - width) / 2;
+    var top = (window.innerHeight - height) / 2;
+    window.open('index360.html', 'popup', 'width=' + width + ',height=' + height + ',left=' + left + ',top=' + top);
+});
+    })();
+</script>
+</body>
+</html>
